@@ -1,6 +1,7 @@
 import sqlite3
 import functools
 import logging
+from datetime import datetime
 
 #### decorator to lof SQL queries
 
@@ -30,3 +31,4 @@ def fetch_all_users(query):
 
 #### fetch users while logging the query
 users = fetch_all_users(query="SELECT * FROM users")
+print users
