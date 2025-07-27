@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import unittest
 from unittest.mock import patch
-from parameterized import parameterized
+from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient  # Assuming the class is in client.py
 from utils import get_json          # get_json should also be in utils.py
 from unittest.mock import patch
