@@ -5,6 +5,7 @@ from parameterized import parameterized
 from client import GithubOrgClient  # Assuming the class is in client.py
 from utils import get_json          # get_json should also be in utils.py
 from unittest.mock import patch
+import fixtures  # assuming fixtures.py exists in the same directory
 
 class TestGithubOrgClient(unittest.TestCase):
     """Tests for GithubOrgClient"""
@@ -59,3 +60,46 @@ class TestGithubOrgClient(unittest.TestCase):
             self.assertEqual(result, ["repo1", "repo2", "repo3"])
             mock_get_json.assert_called_once_with("https://api.github.com/orgs/test-org/repos")
             self.assertEqual(mock_repos_url, "https://api.github.com/orgs/test-org/repos")
+
+
+class TestGithubOrgClient(unittest.TestCase):
+    # ... previous test methods ...
+
+    @parameterized.expand([
+        ({"license": {"key": "my_license"}}, "my_license", True),
+        ({"license": {"key": "other_license"}}, "my_license", False),
+    ])
+    def test_has_license(self, repo, license_key, expected):
+        """Test that has_license returns True if license matches"""
+        result = GithubOrgClient.has_license(repo, license_key)
+        self.assertEqual(result, expected)
+
+@parameterized_class([
+    {
+        "org_payload": fixtures.org_payload,
+        "repos_payload": fixtures.repos_payload,
+        "expected_repos": fixtures.expected_repos,
+        "apache2_repos": fixtures.apache2_repos,
+    }
+])
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration test class for GithubOrgClient.public_repos"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Start patcher for requests.get and configure side effects"""
+        cls.get_patcher = patch("requests.get")
+
+        # Start the patcher and assign the mock to cls.mock_get
+        cls.mock_get = cls.get_patcher.start()
+
+        # Configure .json() return values depending on the URL
+        cls.mock_get.side_effect = [
+            MagicMock(json=lambda: cls.org_payload),
+            MagicMock(json=lambda: cls.repos_payload)
+        ]
+
+    @classmethod
+    def tearDownClass(cls):
+        """Stop patcher after tests"""
+        cls.get_patcher.stop()
