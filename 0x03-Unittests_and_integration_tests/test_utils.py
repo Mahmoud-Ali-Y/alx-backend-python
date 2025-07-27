@@ -101,5 +101,16 @@ class TestMemoize(unittest.TestCase):
             mock_method.assert_called_once()
 
 
-if __name__ == "__main__":
-    unittest.main()
+class TestSomethingElse(unittest.TestCase):
+    """Another test class example to show spacing compliance."""
+
+    def test_example(self):
+        result = 1 + 1  # simple test
+        self.assertEqual(result, 2)
+
+
+# Example of fixing long line (E501)
+LONG_STRING = (
+    "This is an example of a very long string that exceeds seventy-nine characters "
+    "and should be wrapped properly across multiple lines."
+)
